@@ -36,6 +36,9 @@
             android:layout_marginEnd="15dp"
             android:text="NEW GAME"
             android:textSize="11sp"
+            app:backgroundTint="@null"
+            android:background="@color/crimson"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,55 +5,54 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import kotlin.random.Random
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [BoggleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class BoggleFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private val buttonIds = intArrayOf(
+        R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+        R.id.button5, R.id.button6, R.id.button7, R.id.button8,
+        R.id.button9, R.id.button10, R.id.button11, R.id.button12,
+        R.id.button13, R.id.button14, R.id.button15, R.id.button16
+    )
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_boggle, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_boggle, container, false)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BoggleFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BoggleFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        val buttons = Array(buttonIds.size) { index ->
+            view.findViewById<Button>(buttonIds[index])
+        }
+
+        val alphabet = arrayOf(
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        )
+
+        val vowel = arrayOf(
+            'A', 'E', 'I', 'O', 'U'
+        )
+
+        alphabet.shuffle()
+        vowel.shuffle()
+
+        var vowelCount = 0
+        var buttonCount = 0
+        for (button in buttons) {
+            var randomLetter = alphabet[Random.nextInt(0, 26)].toString()
+            if ((buttonCount == buttons.size - 1 && vowelCount < 2) || (buttonCount == ((buttons.size - 1)/2) && vowelCount < 1)) {
+                randomLetter = vowel[Random.nextInt(0, 5)].toString()
             }
+            button.text = randomLetter
+
+            if (randomLetter in listOf<String>("A", "E", "I", "O", "U")) {
+                vowelCount++
+            }
+            buttonCount++
+        }
+        return view
     }
 }
