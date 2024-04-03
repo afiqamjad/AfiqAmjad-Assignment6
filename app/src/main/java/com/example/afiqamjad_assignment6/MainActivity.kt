@@ -4,8 +4,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.afiqamjad_assignment6.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Communicator {
     private lateinit var binding : ActivityMainBinding
+
+    override fun startNewGame() {
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.frameTop,BoggleFragment())
+        fragmentTransaction.commit()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
