@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import kotlin.random.Random
 
 class BoggleFragment : Fragment() {
@@ -22,6 +23,13 @@ class BoggleFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_boggle, container, false)
+        val clearButton = view.findViewById<Button>(R.id.clearButton)
+        val guesserText = view.findViewById<EditText>(R.id.wordGuessed)
+        guesserText.text.clear()
+
+        clearButton.setOnClickListener{
+            guesserText.text.clear()
+        }
 
         val buttons = Array(buttonIds.size) { index ->
             view.findViewById<Button>(buttonIds[index])
