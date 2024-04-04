@@ -1,5 +1,6 @@
 package com.example.afiqamjad_assignment6
 
+
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,9 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import kotlin.math.abs
 import kotlin.random.Random
 
+
 class BoggleFragment : Fragment() {
+
+
+    private var prevPressedButtonIndex: Int = -1
+    private var wordBeingGuessed: String = ""
+    private lateinit var guesserText: EditText
+
 
     private val buttonIds = intArrayOf(
         R.id.button1, R.id.button2, R.id.button3, R.id.button4,
@@ -24,28 +35,31 @@ class BoggleFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_boggle, container, false)
         val clearButton = view.findViewById<Button>(R.id.clearButton)
-        val guesserText = view.findViewById<EditText>(R.id.wordGuessed)
+        guesserText = view.findViewById(R.id.wordGuessed)
+        wordBeingGuessed = ""
+        prevPressedButtonIndex = -1
         guesserText.text.clear()
 
-        clearButton.setOnClickListener{
-            guesserText.text.clear()
-        }
 
         val buttons = Array(buttonIds.size) { index ->
             view.findViewById<Button>(buttonIds[index])
         }
+
 
         val alphabet = arrayOf(
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
             'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
         )
 
+
         val vowel = arrayOf(
             'A', 'E', 'I', 'O', 'U'
         )
 
+
         alphabet.shuffle()
         vowel.shuffle()
+
 
         var vowelCount = 0
         var buttonCount = 0
@@ -56,11 +70,56 @@ class BoggleFragment : Fragment() {
             }
             button.text = randomLetter
 
+
             if (randomLetter in listOf<String>("A", "E", "I", "O", "U")) {
                 vowelCount++
             }
             buttonCount++
         }
+
+        clearButton.setOnClickListener{
+            guesserText.text.clear()
+            for (button in buttons) {
+                button.setBackgroundResource(R.drawable.button)
+                button.isEnabled = true
+            }
+            prevPressedButtonIndex = -1
+            wordBeingGuessed = ""
+        }
+
+        for ((index, button) in buttons.withIndex()) {
+            button.setOnClickListener {
+
+                if (prevPressedButtonIndex != -1) {
+                    // Calculate the row and column of the previously pressed button
+                    val prevRow = prevPressedButtonIndex / 4
+                    val prevCol = prevPressedButtonIndex % 4
+
+
+                    // Calculate the row and column of the currently pressed button
+                    val currRow = index / 4
+                    val currCol = index % 4
+                    if (abs(prevRow - currRow) <= 1 && abs(prevCol - currCol) <= 1) {
+                        button.setBackgroundResource(R.color.gray)
+                        button.isEnabled = false
+                        wordBeingGuessed += button.text.toString()
+                        guesserText.setText(wordBeingGuessed)
+                        prevPressedButtonIndex = index
+                    } else {
+                        // Buttons are not adjacent, handle accordingly
+                        Toast.makeText(context, "INVALID CHOICE", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    button.setBackgroundResource(R.color.gray)
+                    button.isEnabled = false
+                    wordBeingGuessed += button.text.toString()
+                    guesserText.setText(wordBeingGuessed)
+                    prevPressedButtonIndex = index
+                }
+            }
+        }
         return view
     }
+
 }
+
