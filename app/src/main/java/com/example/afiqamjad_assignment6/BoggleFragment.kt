@@ -2,6 +2,7 @@ package com.example.afiqamjad_assignment6
 
 
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,8 @@ class BoggleFragment : Fragment() {
     private var prevPressedButtonIndex: Int = -1
     private var wordBeingGuessed: String = ""
     private lateinit var guesserText: EditText
+    private lateinit var wordsSubmitted: MutableList<String>
+    private var vowelCount: Int = 0
 
 
     private val buttonIds = intArrayOf(
@@ -35,9 +38,14 @@ class BoggleFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_boggle, container, false)
         val clearButton = view.findViewById<Button>(R.id.clearButton)
+        val submitButton = view.findViewById<Button>(R.id.submitButton)
         guesserText = view.findViewById(R.id.wordGuessed)
+        guesserText.inputType = InputType.TYPE_NULL
         wordBeingGuessed = ""
         prevPressedButtonIndex = -1
+        wordsSubmitted = mutableListOf("Hello")
+        wordsSubmitted.clear()
+        vowelCount = 0
         guesserText.text.clear()
 
 
@@ -85,6 +93,7 @@ class BoggleFragment : Fragment() {
             }
             prevPressedButtonIndex = -1
             wordBeingGuessed = ""
+            vowelCount = 0
         }
 
         for ((index, button) in buttons.withIndex()) {
@@ -105,6 +114,9 @@ class BoggleFragment : Fragment() {
                         wordBeingGuessed += button.text.toString()
                         guesserText.setText(wordBeingGuessed)
                         prevPressedButtonIndex = index
+                        if (button.text.toString() in listOf("A", "E", "I", "O", "U")) {
+                            vowelCount++
+                        }
                     } else {
                         // Buttons are not adjacent, handle accordingly
                         Toast.makeText(context, "INVALID CHOICE", Toast.LENGTH_SHORT).show()
@@ -115,9 +127,35 @@ class BoggleFragment : Fragment() {
                     wordBeingGuessed += button.text.toString()
                     guesserText.setText(wordBeingGuessed)
                     prevPressedButtonIndex = index
+                    if (button.text.toString() in listOf("A", "E", "I", "O", "U")) {
+                        vowelCount++
+                    }
                 }
             }
         }
+
+        submitButton.setOnClickListener {
+            if (wordBeingGuessed.isNotEmpty()) {
+                if (wordBeingGuessed.length >= 4) {
+                    if (wordBeingGuessed !in wordsSubmitted) {
+                        if (vowelCount >= 2) {
+                            (activity as Communicator).submitWord(wordBeingGuessed)
+                            wordsSubmitted.add(wordBeingGuessed)
+                            clearButton.performClick()
+                        } else {
+                            Toast.makeText(context, "Word needs at least 2 vowels!", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(context, "You've already guessed that word!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(context, "Word needs to be at least 4 characters long!", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Word being guessed is empty!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         return view
     }
 

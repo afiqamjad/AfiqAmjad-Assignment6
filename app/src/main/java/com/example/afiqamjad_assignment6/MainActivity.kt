@@ -13,6 +13,12 @@ class MainActivity : AppCompatActivity(), Communicator {
         fragmentTransaction.replace(R.id.frameTop,BoggleFragment())
         fragmentTransaction.commit()
     }
+
+    override fun submitWord(submittedWord: String) {
+        val scoreFragment = supportFragmentManager.findFragmentById(R.id.frameBottom) as? ScoreFragment
+        scoreFragment?.receiveWord(submittedWord)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,6 +29,8 @@ class MainActivity : AppCompatActivity(), Communicator {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameTop,BoggleFragment())
         fragmentTransaction.replace(R.id.frameBottom,ScoreFragment())
+        val scoreFragment = ScoreFragment()
+        fragmentTransaction.add(R.id.frameBottom, scoreFragment, "scoreFragment")
         fragmentTransaction.commit()
     }
 }
