@@ -1,5 +1,6 @@
 package com.example.afiqamjad_assignment6
 
+import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
@@ -12,12 +13,21 @@ import androidx.fragment.app.Fragment
 import okhttp3.*
 import java.io.IOException
 import java.util.Locale
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import kotlin.math.sqrt
 
-class ScoreFragment : Fragment() {
+class ScoreFragment : Fragment(), SensorEventListener {
     private var score: Int = 0
     private lateinit var scoreDisplay: EditText
     private val client = OkHttpClient()
     private var dictionary: Set<String> = emptySet()
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var currentAcceleration = SensorManager.GRAVITY_EARTH
+    private var lastAcceleration = SensorManager.GRAVITY_EARTH
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +38,8 @@ class ScoreFragment : Fragment() {
         scoreDisplay = view.findViewById(R.id.score)
         scoreDisplay.inputType = InputType.TYPE_NULL
         fetchDictionary()
+        sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         return view
     }
 
@@ -39,6 +51,35 @@ class ScoreFragment : Fragment() {
             score = 0
             scoreDisplay.text.clear()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        val x = event.values[0]
+        val y = event.values[1]
+        val z = event.values[2]
+
+        lastAcceleration = currentAcceleration
+        currentAcceleration = sqrt(x * x + y * y + z * z)
+        val delta = currentAcceleration - lastAcceleration
+
+        if (delta > 2) {
+            (activity as Communicator).startNewGame()
+            score = 0
+            scoreDisplay.text.clear()
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
     }
 
     private fun fetchDictionary() {
@@ -63,9 +104,8 @@ class ScoreFragment : Fragment() {
     }
 
     fun receiveWord(word: String) {
-        var newScore = 0
         if (isValid(word)) {
-            newScore = calculateScore(word)
+            val newScore = calculateScore(word)
             score += newScore
             Toast.makeText(context, "Correct! +$newScore", Toast.LENGTH_SHORT).show()
         } else {
