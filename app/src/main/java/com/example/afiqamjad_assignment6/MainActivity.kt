@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), Communicator {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameTop,BoggleFragment())
-        fragmentTransaction.replace(R.id.frameBottom,ScoreFragment())
+        fragmentTransaction.replace(R.id.frameBottom, ScoreFragment())
         val scoreFragment = ScoreFragment()
         fragmentTransaction.add(R.id.frameBottom, scoreFragment, "scoreFragment")
         fragmentTransaction.commit()

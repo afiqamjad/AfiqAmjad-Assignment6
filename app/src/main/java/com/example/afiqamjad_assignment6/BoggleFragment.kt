@@ -69,7 +69,7 @@ class BoggleFragment : Fragment() {
         vowel.shuffle()
 
 
-        var vowelCount = 0
+        var vowelRandomCount = 0
         var buttonCount = 0
         for (button in buttons) {
             var randomLetter = alphabet[Random.nextInt(0, 26)].toString()
@@ -80,7 +80,7 @@ class BoggleFragment : Fragment() {
 
 
             if (randomLetter in listOf<String>("A", "E", "I", "O", "U")) {
-                vowelCount++
+                vowelRandomCount++
             }
             buttonCount++
         }
